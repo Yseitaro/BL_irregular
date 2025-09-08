@@ -126,35 +126,11 @@ class BottomLeftFill(object):
             return one_pt["index"]
 
 
-            # if self.vertical==True:
-            #     # top-left
-            #     target=pt[1]
-            # else:
-            #     # left-bottom
-            target=pt[0]
-            if target<_min:
-                _min=target
-                bl=[pt_object]
-            elif target==_min:
-                bl.append(pt_object)
-        # if len(bl)==1:
-        #     return bl[0]["index"]
-        # else:
-        #     # if self.vertical==True:
-        #     #     target="x"                
-        #     # else:
-        #     target="y"
-        #     _min=bl[0][target]
-        #     one_pt=bl[0]
-        #     for pt_index in range(1,len(bl)):
-        #         if bl[pt_index][target]<_min:
-        #             one_pt=bl[pt_index]
-        #             # 強制的にbottomを選択
-        #             _min=one_pt["y"]
-        #     return one_pt["index"]
-
+          
     def showAll(self):
         
+        PltFunc.showGif(self.polygons)
+        exit()
         for i in range(0,len(self.polygons)):
             PltFunc.addPolygon(self.polygons[i])
         length=max(self.width,self.contain_length)

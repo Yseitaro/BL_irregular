@@ -22,6 +22,11 @@ class PltFunc(object):
         else:
             plt.plot([line[0][0],line[1][0]],[line[0][1],line[1][1]],color=kw["color"],linewidth=0.5)            
     
+    def showGif(polygons, **kw):
+        for i in range(0, len(polygons)):
+            PltFunc.addPolygon(polygons[i])
+            PltFunc.showPlt(width=900,height=800, id=i)
+
     def showPlt(**kw):
         if len(kw)>0:
             if "minus" in kw:
@@ -35,10 +40,13 @@ class PltFunc(object):
             plt.axis([0,1000,0,1000])
             # plt.axis([-1000,2000,-979400.4498015114,20000])
             # plt.axis([-500,1000,0,1500])
-        # if "id" in kw:
-        plt.savefig(f'results/dataset_6.png')
-        plt.show()
-        plt.clf()
+        
+        if "id" in kw:
+            plt.savefig(f'results/dataset_6_{kw["id"]}.png')
+        else:
+            plt.savefig(f'results/dataset_6.png')
+        # plt.show()
+        # plt.clf()
 
     def showPolys(polys):
         for poly in polys:
