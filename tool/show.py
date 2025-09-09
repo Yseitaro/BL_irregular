@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import sys
+import os
 
 class PltFunc(object):
 
@@ -8,6 +10,20 @@ class PltFunc(object):
                 PltFunc.addLine([poly[i],poly[0]])
             else:
                 PltFunc.addLine([poly[i],poly[i+1]])
+
+    def addWiring(wirings, startpoint, distance_list):
+
+        for i in range(0,len(wirings)-1):
+            plt.plot([wirings[i][0],wirings[i+1][0]],[wirings[i][1],wirings[i+1][1]],color="red",linewidth=1)
+            if i == 0:
+                plt.plot(wirings[i][0],wirings[i][1],'o',markersize=5,color="red")
+            else:
+                plt.plot(wirings[i][0],wirings[i][1],'o',markersize=5,color="black")
+            plt.plot(wirings[i+1][0],wirings[i+1][1],'o',markersize=5,color="black")
+
+            plt.title(f'Start point at {startpoint+1} Wiring Length: {distance_list[i]:.2f}')
+            os.makedirs(f'results/Start_point{startpoint+1}', exist_ok=True)
+            plt.savefig(f'results/Start_point{startpoint+1}/dataset_6_opt_wire_{i}.png')
 
     def addPolygonColor(poly):
         for i in range(0,len(poly)):
@@ -44,7 +60,7 @@ class PltFunc(object):
         if "id" in kw:
             plt.savefig(f'results/dataset_6_{kw["id"]}.png')
         else:
-            plt.savefig(f'results/dataset_6.png')
+            plt.savefig(f'results/dataset_6_opt_wire.png')
         # plt.show()
         # plt.clf()
 

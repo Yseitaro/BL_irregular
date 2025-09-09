@@ -22,13 +22,15 @@ import random
 import copy
 
 class BottomLeftFill(object):
-    def __init__(self,width,original_polygons,**kw):
+    def __init__(self,width,original_polygons, **kw):
         self.choose_nfp=False
         self.width=width
         self.height=1000 
         self.contain_length=2000
         self.polygons=original_polygons
         self.NFPAssistant=None
+        # 配置された図形の重心座標を格納するリスト
+        self.nodes_centroid = []
         if 'NFPAssistant' in kw:
             self.NFPAssistant=kw["NFPAssistant"]
         # self.vertical=False
@@ -45,14 +47,18 @@ class BottomLeftFill(object):
             self.placePoly(i)
         
         self.getLength()
-        # self.showAll()
+        self.startpoint = 11
+        tours, total_distance, distance_list = self.nn_tsp(self.nodes_centroid, start_node = self.startpoint)
+        self.showAll(total_distance=total_distance, distance_list = distance_list, tours=tours)
 
     def placeFirstPoly(self):
         poly=self.polygons[0]
-        left_index,bottom_index,right_index,top_index=GeoFunc.checkBound(poly) # 获得边界        
-        GeoFunc.slidePoly(poly,-poly[left_index][0],-poly[bottom_index][1]) # 平移到左下角
+        left_index,bottom_index,right_index,top_index=GeoFunc.checkBound(poly)
+        GeoFunc.slidePoly(poly,-poly[left_index][0],-poly[bottom_index][1]) 
+        self.nodes_centroid.append(GeoFunc.getCentroid(poly))
 
     def placePoly(self,index):
+
         adjoin=self.polygons[index]
    
         ifr=packing.PackingUtil.getInnerFitRectangle(self.polygons[index],self.width,self.height)
@@ -92,7 +98,10 @@ class BottomLeftFill(object):
         # adjoin「配置対象図形」の中で，topの点を取得
         refer_pt_index=GeoFunc.checkTop(adjoin)
         # self.polygons[index]（配置対象）の値を更新
-        GeoFunc.slideToPoint(self.polygons[index],adjoin[refer_pt_index],differ[differ_index])        
+        GeoFunc.slideToPoint(self.polygons[index],adjoin[refer_pt_index],differ[differ_index])     
+        
+        self.nodes_centroid.append(GeoFunc.getCentroid(self.polygons[index]))
+
 
     def getBottomLeft(self,poly):
         bl=[] 
@@ -126,25 +135,24 @@ class BottomLeftFill(object):
             return one_pt["index"]
 
 
-          
-    def showAll(self):
-        
-        PltFunc.showGif(self.polygons)
-        exit()
+
+    def showAll(self, total_distance=None, distance_list=None, tours=None):
+
+        # PltFunc.showGif(self.polygons)
+        # exit()
         for i in range(0,len(self.polygons)):
             PltFunc.addPolygon(self.polygons[i])
+        # if total_distance!=None:
+        #     PltFunc.addWiring(tours, self.startpoint, distance_list)
+        #     print(f'total wiring length: {total_distance}')
         length=max(self.width,self.contain_length)
         # PltFunc.addLine([[self.width,0],[self.width,self.contain_height]],color="blue")
         PltFunc.showPlt(width=max(length,self.width),height=max(length,self.width))
+        if total_distance!=None:
+            PltFunc.addWiring(tours, self.startpoint, distance_list)
+            print(f'total wiring length: {total_distance}')
         print(f'width: {self.width}, contain_length: {self.contain_length}')
 
-        # polynominal dataset 6に対して，gifを作成するためのコード
-        # for i in range(0,len(self.polygons)):
-        #     PltFunc.addPolygon(self.polygons[i])
-        #     PltFunc.showPlt(width=760,height=940, id=i)
-        # PltFunc.addLine([[self.width,0],[self.width,self.contain_height]],color="blue")
-        
-        # print(f'width: {self.width}, contain_length: {self.contain_length}')
 
     def showPolys(self,polys):
         for i in range(0,len(polys)-1):
@@ -163,11 +171,49 @@ class BottomLeftFill(object):
         self.contain_length=_max
         
         return _max
+    
+
+    def nn_tsp(self, cities, start_node):
+        """ある都市から経路を始め、その都市から一番近い都市へと経路を進め、その次の都市からさらに次の、まだ訪れていない都市へと経路を進める。"""
+
+        total_distance = 0
+        distance_list = []
+        print(f'cities: {cities}')
+        # exit()
+        start = cities[start_node]
+        tour = [start]
+        unvisited = cities.copy() 
+        unvisited.remove(start)     
+
+        while len(unvisited) > 0:
+            
+            distance, next_node = self.nearest_neighbor(tour[-1], unvisited)
+            total_distance += distance
+            distance_list.append(total_distance)
+            tour.append(next_node)
+            unvisited.remove(next_node)
+
+        return tour, total_distance, distance_list
+
+    def nearest_neighbor(self, A, cities):
+        "citiesのうち、Aに一番近いものを見つける。"
+        min = np.inf
+        for i in range(len(cities)):
+            if distance(A, cities[i]) < min:
+                min = distance(A, cities[i])
+                n_cities = cities[i]
+        return min, n_cities
+
+def distance(A, B):
+    "AとBのユークリッド距離を計算"
+    return ((A[0] - B[0]) ** 2 + (A[1] - B[1]) ** 2) ** 0.5 
+
 
 
     
 if __name__=='__main__':
     # index from 0-15
+    
     index=6
     polys=getData(index)
     nfp_ass=packing.NFPAssistant(polys,store_nfp=True,get_all_nfp=True,load_history=False)
