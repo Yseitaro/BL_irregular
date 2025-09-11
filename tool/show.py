@@ -21,9 +21,12 @@ class PltFunc(object):
                 plt.plot(wirings[i][0],wirings[i][1],'o',markersize=5,color="black")
             plt.plot(wirings[i+1][0],wirings[i+1][1],'o',markersize=5,color="black")
 
-            plt.title(f'Start point at {startpoint+1} Wiring Length: {distance_list[i]:.2f}')
-            os.makedirs(f'results/Start_point{startpoint+1}', exist_ok=True)
-            plt.savefig(f'results/Start_point{startpoint+1}/dataset_6_opt_wire_{i}.png')
+            # plt.title(f'Start point at {startpoint+1} Wiring Length: {distance_list[i]:.2f}')
+            # os.makedirs(f'results/Start_point{startpoint+1}', exist_ok=True)
+            # plt.savefig(f'results/Start_point{startpoint+1}/dataset_6_opt_wire_{i}.png')
+        plt.title(f'Start point at {startpoint+1} Wiring Length: {distance_list[i]:.2f}')
+        os.makedirs(f'results/Start_point{startpoint+1}', exist_ok=True)
+        plt.savefig(f'results/Start_point{startpoint+1}/dataset_opt_wire_{i}.png')
 
     def addPolygonColor(poly):
         for i in range(0,len(poly)):
@@ -51,16 +54,18 @@ class PltFunc(object):
                 plt.axis([-kw["minus"],kw["width"],-kw["minus"],kw["height"]])
                 
             else:
-                plt.axis([0,kw["width"],0,kw["height"]])
+                plt.xlim(0, kw["width"])
+                plt.ylim(0, kw["height"])
+                # plt.axis([0,kw["width"],0,kw["height"]+1000])
         else:
             plt.axis([0,1000,0,1000])
             # plt.axis([-1000,2000,-979400.4498015114,20000])
             # plt.axis([-500,1000,0,1500])
         
         if "id" in kw:
-            plt.savefig(f'results/dataset_6_{kw["id"]}.png')
+            plt.savefig(f'results/dataset_{kw["id"]+1}.png')
         else:
-            plt.savefig(f'results/dataset_6_opt_wire.png')
+            plt.savefig(f'results/dataset_opt_wire.png')
         # plt.show()
         # plt.clf()
 

@@ -25,14 +25,17 @@ class BottomLeftFill(object):
     def __init__(self,width,original_polygons, **kw):
         self.choose_nfp=False
         self.width=width
-        self.height=1000 
+        self.height=8000
         self.contain_length=2000
         self.polygons=original_polygons
         self.NFPAssistant=None
+        
         # 配置された図形の重心座標を格納するリスト
         self.nodes_centroid = []
         if 'NFPAssistant' in kw:
             self.NFPAssistant=kw["NFPAssistant"]
+        if 'data_id' in kw:
+            self.data_id=kw['data_id']
         # self.vertical=False
         # if 'vertical' in kw:
         #     self.vertical=kw['vertical']
@@ -47,7 +50,7 @@ class BottomLeftFill(object):
             self.placePoly(i)
         
         self.getLength()
-        self.startpoint = 11
+        self.startpoint = 0
         tours, total_distance, distance_list = self.nn_tsp(self.nodes_centroid, start_node = self.startpoint)
         self.showAll(total_distance=total_distance, distance_list = distance_list, tours=tours)
 
@@ -145,9 +148,11 @@ class BottomLeftFill(object):
         # if total_distance!=None:
         #     PltFunc.addWiring(tours, self.startpoint, distance_list)
         #     print(f'total wiring length: {total_distance}')
+        print(f'width: {self.width}, contain_length: {self.contain_length}')
+        
         length=max(self.width,self.contain_length)
         # PltFunc.addLine([[self.width,0],[self.width,self.contain_height]],color="blue")
-        PltFunc.showPlt(width=max(length,self.width),height=max(length,self.width))
+        PltFunc.showPlt(width=self.width,height=self.contain_length, id = self.data_id)
         if total_distance!=None:
             PltFunc.addWiring(tours, self.startpoint, distance_list)
             print(f'total wiring length: {total_distance}')
@@ -214,13 +219,13 @@ def distance(A, B):
 if __name__=='__main__':
     # index from 0-15
     
-    index=6
+    index=1
     polys=getData(index)
     nfp_ass=packing.NFPAssistant(polys,store_nfp=True,get_all_nfp=True,load_history=False)
 
     starttime = datetime.datetime.now()
     # bfl=BottomLeftFill(2000,polys,vertical=False)
-    bfl=BottomLeftFill(900,polys, NFPAssistant=nfp_ass)
+    bfl=BottomLeftFill(5000,polys, NFPAssistant=nfp_ass, data_id=index)
     
     endtime = datetime.datetime.now()
     print ("total time: ",endtime - starttime)
