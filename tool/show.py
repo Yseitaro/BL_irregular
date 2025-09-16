@@ -11,7 +11,7 @@ class PltFunc(object):
             else:
                 PltFunc.addLine([poly[i],poly[i+1]])
 
-    def addWiring(wirings, startpoint, distance_list):
+    def addWiring(wirings, startpoint, distance_list, datasets_id):
 
         for i in range(0,len(wirings)-1):
             plt.plot([wirings[i][0],wirings[i+1][0]],[wirings[i][1],wirings[i+1][1]],color="red",linewidth=1)
@@ -24,9 +24,9 @@ class PltFunc(object):
             # plt.title(f'Start point at {startpoint+1} Wiring Length: {distance_list[i]:.2f}')
             # os.makedirs(f'results/Start_point{startpoint+1}', exist_ok=True)
             # plt.savefig(f'results/Start_point{startpoint+1}/dataset_6_opt_wire_{i}.png')
-        plt.title(f'Start point at {startpoint+1} Wiring Length: {distance_list[i]:.2f}')
-        os.makedirs(f'results/Start_point{startpoint+1}', exist_ok=True)
-        plt.savefig(f'results/Start_point{startpoint+1}/dataset_opt_wire_{i}.png')
+            plt.title(f'Start point at {startpoint+1} Wiring Length: {distance_list[i]:.2f}')
+            os.makedirs(f'results/dataset{datasets_id+1}/Start_point{startpoint+1}', exist_ok=True)
+            plt.savefig(f'results/dataset{datasets_id+1}/Start_point{startpoint+1}/dataset_opt_wire_{i}.png')
 
     def addPolygonColor(poly):
         for i in range(0,len(poly)):
@@ -41,10 +41,10 @@ class PltFunc(object):
         else:
             plt.plot([line[0][0],line[1][0]],[line[0][1],line[1][1]],color=kw["color"],linewidth=0.5)            
     
-    def showGif(polygons, **kw):
+    def showGif(polygons, width, height, datasets_id):
         for i in range(0, len(polygons)):
             PltFunc.addPolygon(polygons[i])
-            PltFunc.showPlt(width=900,height=800, id=i)
+            PltFunc.showPlt(width=width,height=height, id=i, datasets_id=datasets_id)
 
     def showPlt(**kw):
         if len(kw)>0:
@@ -63,7 +63,8 @@ class PltFunc(object):
             # plt.axis([-500,1000,0,1500])
         
         if "id" in kw:
-            plt.savefig(f'results/dataset_{kw["id"]+1}.png')
+            os.makedirs(f'results/dataset{kw["datasets_id"]+1}', exist_ok=True)
+            plt.savefig(f'results/dataset{kw["datasets_id"]+1}/poly_{kw["id"]+1}.png')
         else:
             plt.savefig(f'results/dataset_opt_wire.png')
         # plt.show()

@@ -141,8 +141,8 @@ class BottomLeftFill(object):
 
     def showAll(self, total_distance=None, distance_list=None, tours=None):
 
-        # PltFunc.showGif(self.polygons)
-        # exit()
+        PltFunc.showGif(self.polygons, self.width, self.contain_length, self.data_id)
+        exit()
         for i in range(0,len(self.polygons)):
             PltFunc.addPolygon(self.polygons[i])
         # if total_distance!=None:
@@ -152,9 +152,9 @@ class BottomLeftFill(object):
         
         length=max(self.width,self.contain_length)
         # PltFunc.addLine([[self.width,0],[self.width,self.contain_height]],color="blue")
-        PltFunc.showPlt(width=self.width,height=self.contain_length, id = self.data_id)
+        PltFunc.showPlt(width=self.width,height=self.contain_length, id = self.data_id, datasets_id=self.data_id)
         if total_distance!=None:
-            PltFunc.addWiring(tours, self.startpoint, distance_list)
+            PltFunc.addWiring(tours, self.startpoint, distance_list, self.data_id)
             print(f'total wiring length: {total_distance}')
         print(f'width: {self.width}, contain_length: {self.contain_length}')
 
@@ -219,13 +219,13 @@ def distance(A, B):
 if __name__=='__main__':
     # index from 0-15
     
-    index=1
+    index=10
     polys=getData(index)
     nfp_ass=packing.NFPAssistant(polys,store_nfp=True,get_all_nfp=True,load_history=False)
 
     starttime = datetime.datetime.now()
     # bfl=BottomLeftFill(2000,polys,vertical=False)
-    bfl=BottomLeftFill(5000,polys, NFPAssistant=nfp_ass, data_id=index)
+    bfl=BottomLeftFill(1500,polys, NFPAssistant=nfp_ass, data_id=index)
     
     endtime = datetime.datetime.now()
     print ("total time: ",endtime - starttime)
