@@ -92,12 +92,13 @@ class BottomLeftFill(object):
 
         # 差分で計算した複数の多角形の全ての頂点を統合した単一の座標配列
         print(f'differ {differ_region}')
-        differ=GeoFunc.polyToArr(differ_region)
-        # print(f'len(differ): {len(differ)}')
-        # print(f'differ: {differ}')
-        # exit()
+        differ=GeoFunc.polyToArr(differ_region)        
         # differ点の中で，左下の点を取得
         differ_index=self.getBottomLeft(differ)
+        '''複雑な制約を追加する場合は，differ_indexを変更する必要がある
+        例えば，図形Aと図形B間のユークリッド距離が最も小さい点を探索する関数を作成するなど'''
+        index_a = 2
+        differ_index = self.EuclideanNearestPoint(adjoin, self.polygons[index_a], differ)
         # adjoin「配置対象図形」の中で，topの点を取得
         refer_pt_index=GeoFunc.checkTop(adjoin)
         # self.polygons[index]（配置対象）の値を更新
@@ -105,6 +106,12 @@ class BottomLeftFill(object):
         
         self.nodes_centroid.append(GeoFunc.getCentroid(self.polygons[index]))
 
+
+    def EuclideanNearestPoint(self, polygon_target, polygon_placed, differ):
+        '''polybon_placedの重心点の座標を算出'''
+        '''重心点とdiffer間で最もユークリッド距離が短い点を探索→厳密には，differ点に実際にpolygon_placedを配置して
+        targetとplacedの重心間のユークリッド距離を算出するが，計算時間の都合上近似するものとする．'''
+        '''探索点を返す'''
 
     def getBottomLeft(self,poly):
         bl=[] 
