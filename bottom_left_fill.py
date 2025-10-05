@@ -226,13 +226,13 @@ def distance(A, B):
     
 if __name__=='__main__':
     # index from 0-15
-    
+    # indexの番号を変えることで，異なるデータセットで試すことが可能
     index=10
     polys=getData(index)
     nfp_ass=packing.NFPAssistant(polys,store_nfp=True,get_all_nfp=True,load_history=False)
 
     starttime = datetime.datetime.now()
-    # bfl=BottomLeftFill(2000,polys,vertical=False)
+    
     bfl=BottomLeftFill(1500,polys, NFPAssistant=nfp_ass, data_id=index)
     
     endtime = datetime.datetime.now()

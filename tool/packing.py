@@ -4,7 +4,6 @@ from shapely.geometry import Polygon,Point,mapping,LineString
 from shapely.ops import unary_union
 from shapely import affinity
 from tool.geofunc import GeoFunc
-import pyclipper 
 import math
 import numpy as np
 import pandas as pd

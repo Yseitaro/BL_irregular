@@ -1,7 +1,6 @@
 from shapely.geometry import Polygon,Point,mapping,LineString
 from shapely.ops import unary_union
 from shapely import affinity
-import pyclipper 
 import math
 import numpy as np
 import pandas as pd
