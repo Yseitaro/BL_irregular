@@ -14,21 +14,17 @@ import random
 import copy
 import os
 
-bias=0.00001 # 计算精度偏差
+bias=0.00001 
 
 class GeoFunc(object):
-    '''
-    几何相关函数
-    1. checkBottom、checkTop、checkLeft、checkRight暂时不考虑多个点
-    2. checkBottom和checkLeft均考虑最左下角
-    '''
+
     def almostContain(line,point):
         # int型により計算誤差が発生する可能性あり！！！！！！
         pt1=[line[0][0],line[0][1]]
         pt2=[line[1][0],line[1][1]]
         point=[point[0],point[1]]
 
-        # 点が水平な線分上にあるかどうかを判定。
+        # 点が水平な線分上にあるかどうかを判定．
         if abs(pt1[1]-point[1])<bias and abs(pt2[1]-point[1])<bias:
             # 点が線分の範囲内にあるか
             if (pt1[0]-point[0])*(pt2[0]-point[0])<0:
@@ -47,10 +43,10 @@ class GeoFunc(object):
         if abs(pt1[0]-point[0])<bias or abs(pt2[0]-point[0])<bias or abs(pt1[0]-pt2[0])<bias:
             return False
 
-        # 正常情况，计算弧度的差值
+        # 通常の場合，ラジアンの差を計算する
         arc1=np.arctan((line[0][1]-line[1][1])/(line[0][0]-line[1][0]))
         arc2=np.arctan((point[1]-line[1][1])/(point[0]-line[1][0]))
-        if abs(arc1-arc2)<bias: # 原值0.03，dighe近似平行修正为0.01
+        if abs(arc1-arc2)<bias: # 元の閾値0.03．digheの近似平行の修正で0.01に変更
             if (point[1]-pt1[1])*(pt2[1]-point[1])>0 and (point[0]-pt1[0])*(pt2[0]-point[0])>0:
                 # print("一般情况")
                 return True
@@ -61,10 +57,10 @@ class GeoFunc(object):
     
     def computeInterArea(orginal_inter):
         '''
-        计算相交区域的面积
+        交差領域の面積を計算する
         '''
         inter=mapping(orginal_inter)
-        # 一个多边形
+
         if inter["type"]=="Polygon":
             if len(inter["coordinates"])>0:
                 poly=inter["coordinates"][0]
@@ -119,7 +115,7 @@ class GeoFunc(object):
         return GeoFunc.checkLeft(poly), GeoFunc.checkBottom(poly), GeoFunc.checkRight(poly), GeoFunc.checkTop(poly)
     
     def checkBoundPt(poly):
-        '''获得边界的点'''
+        '''境界の点を取得する'''
         left,bottom,right,top=poly[0],poly[0],poly[0],poly[0]
         for i,pt in enumerate(poly):
             if pt[0]<left[0]:
@@ -133,7 +129,7 @@ class GeoFunc(object):
         return left,bottom,right,top
 
     def checkBoundValue(poly):
-        '''获得边界的值'''
+        '''境界値を取得する'''
         left,bottom,right,top=poly[0][0],poly[0][1],poly[0][0],poly[0][1]
         for i,pt in enumerate(poly):
             if pt[0]<left:
@@ -149,12 +145,12 @@ class GeoFunc(object):
     def slideToPoint(poly,pt1,pt2):
         # print(f'pt1: {pt1}, pt2: {pt2}')
         # exit()
-        # 多角形poly（slidings）を、点pt1が点pt2の位置に来るように移動
+        # 多角形poly（slidings）を，点pt1が点pt2の位置に来るように移動
         GeoFunc.slidePoly(poly,pt2[0]-pt1[0],pt2[1]-pt1[1])
 
     def getSlide(poly,x,y):
         '''
-        获得平移后的情况
+        平行移動後の状態を取得する
         '''
         new_vertex=[]
         for point in poly:
@@ -205,13 +201,13 @@ class GeoFunc(object):
             ver[0]=ver[0]*num
             ver[1]=ver[1]*num
 
-    '''近似计算'''
+    '''近似計算'''
     def crossProduct(vec1,vec2):
         res=vec1[0]*vec2[1]-vec1[1]*vec2[0]
-        # 最简单的计算
+        # 最も簡単な計算
         if abs(res)<bias:
             return 0
-        # 部分情况叉积很大但是仍然基本平行
+        # 場合によっては外積が大きくてもほぼ平行
         if abs(vec1[0])>bias and abs(vec2[0])>bias:
             if abs(vec1[1]/vec1[0]-vec2[1]/vec2[0])<bias:
                 return 0
@@ -236,7 +232,7 @@ class GeoFunc(object):
             return inter_coor
 
         # いずれかの頂点が一致するかを照合
-        # 数値誤差でShapelyが交点を検出できない場合の補完処理として、端点同士の接触を検出している。
+        # 数値誤差でShapelyが交点を検出できない場合の補完処理として，端点同士の接触を検出している．
         res=[]
 
         for pt1 in line1:
@@ -257,7 +253,7 @@ class GeoFunc(object):
                 return pt # line2の端点がline1上にある
         return []
     
-    ''' 主要用于判断是否有直线重合 过于复杂需要重构'''
+
     def newLineInter(line1,line2):
         vec1=GeoFunc.lineToVec(line1)
         vec2=GeoFunc.lineToVec(line2)
@@ -268,19 +264,19 @@ class GeoFunc(object):
             "length":0,
             "geom_type":None
         }
-        # 只有平行才会有直线重叠
+        # 直線が重なるのは平行の場合のみ
         if vec12_product==0:
-            # copy避免影响原值
+            # コピーして元の値に影響を与えないようにする
             new_line1=GeoFunc.copyPoly(line1)
             new_line2=GeoFunc.copyPoly(line2)
             if vec1[0]*vec2[0]<0 or vec1[1]*vec2[1]<0:
                 new_line2=GeoFunc.reverseLine(new_line2)
-            # 如果存在顶点相等，则选择其中一个
+            # 頂点が一致する場合はその一方を選択する
             if GeoFunc.almostEqual(new_line1[0],new_line2[0]) or GeoFunc.almostEqual(new_line1[1],new_line2[1]):
                 inter["length"]=min(Line1.length,Line2.length)
                 inter["geom_type"]='LineString'
                 return inter
-            # 排除只有顶点相交情况
+            # 端点だけが交差する場合を除外する
             if GeoFunc.almostEqual(new_line1[0],new_line2[1]):
                 inter["length"]=new_line2[1]
                 inter["geom_type"]='Point'
@@ -289,22 +285,22 @@ class GeoFunc(object):
                 inter["length"]=new_line1[1]
                 inter["geom_type"]='Point'
                 return inter
-            # 否则判断是否包含
+            # それ以外は包含関係を判定する
             line1_contain_line2_pt0=GeoFunc.almostContain(new_line1,new_line2[0])
             line1_contain_line2_pt1=GeoFunc.almostContain(new_line1,new_line2[1])
             line2_contain_line1_pt0=GeoFunc.almostContain(new_line2,new_line1[0])
             line2_contain_line1_pt1=GeoFunc.almostContain(new_line2,new_line1[1])
-            # Line1直接包含Line2
+            # Line1がLine2を直接包含
             if line1_contain_line2_pt0 and line1_contain_line2_pt1:
                 inter["length"]=Line1.length
                 inter["geom_type"]='LineString'
                 return inter
-            # Line2直接包含Line1
+            # Line2がLine1を直接包含
             if line1_contain_line2_pt0 and line1_contain_line2_pt1:
                 inter["length"]=Line2.length
                 inter["geom_type"]='LineString'
                 return inter
-            # 相互包含交点
+            # 相互包含の交点
             if line1_contain_line2_pt0 and line2_contain_line1_pt1:
                 inter["length"]=LineString([line2[0],line1[1]]).length
                 inter["geom_type"]='LineString'
@@ -320,7 +316,7 @@ class GeoFunc(object):
         pt1=line[1]
         return [[pt1[0],pt1[1]],[pt0[0],pt0[1]]]
 
-    '''近似计算'''
+    '''近似計算'''
     def almostEqual(point1,point2):
         if abs(point1[0]-point2[0])<bias and abs(point1[1]-point2[1])<bias:
             return True
@@ -329,7 +325,7 @@ class GeoFunc(object):
 
     def extendLine(line):
         '''
-        直线延长
+        直線を延長する
         '''
         pt0=line[0]
         pt1=line[1]
@@ -341,7 +337,7 @@ class GeoFunc(object):
         return [new_pt0,new_pt1]
 
     def getArc(line):
-        if abs(line[0][0]-line[1][0])<0.01: # 垂直情况
+        if abs(line[0][0]-line[1][0])<0.01: # 垂直の場合
             if line[0][1]-line[1][1]>0:
                 return 0.5*math.pi
             else:
@@ -352,11 +348,11 @@ class GeoFunc(object):
 
     def extendInter(line1,line2):
         '''
-        获得延长线的交点
+        延長線の交点を求める
         '''
         line1_extend=GeoFunc.extendLine(line1)
         line2_extend=GeoFunc.extendLine(line2)
-        # 排查平行情况
+        # 平行かどうかを確認する
         k1=GeoFunc.getArc(line1_extend)
         k2=GeoFunc.getArc(line2_extend)
         if abs(k1-k2)<0.01:
@@ -373,19 +369,19 @@ class GeoFunc(object):
 
     def similarPoly(poly):
         '''
-        求解凸多边形的近似多边形，凹多边形内凹部分额外处理
+        凸多角形の近似多角形を求める．凹多角形は内側の凹みを別途処理する
         '''
         change_len=10
         extend_poly=poly+poly
         Poly=Polygon(poly)
         new_edges=[]
-        # 计算直线平移
+        # 直線の平行移動を計算
         for i in range(len(poly)):
             line=[extend_poly[i],extend_poly[i+1]]
             new_line=GeoFunc.slideOutLine(line,Poly,change_len)
             new_edges.append(new_line)
         
-        # 计算直线延长线
+        # 直線の延長線を計算
         new_poly=[]
         new_edges.append(new_edges[0])
         for i in range(len(new_edges)-1):
@@ -398,13 +394,13 @@ class GeoFunc(object):
 
     def slideOutLine(line,Poly,change_len):
         '''
-        向外平移直线
+        直線を外側へ平行移動する
         '''
         pt0=line[0]
         pt1=line[1]
         mid=[(pt0[0]+pt1[0])/2,(pt0[1]+pt1[1])/2]
         if pt0[1]!=pt1[1]:
-            k=-(pt0[0]-pt1[0])/(pt0[1]-pt1[1]) # 垂直直线情况
+            k=-(pt0[0]-pt1[0])/(pt0[1]-pt1[1]) # 垂直な直線の場合
             theta=math.atan(k)
             delta_x=1*math.cos(theta)
             delta_y=1*math.sin(theta)
@@ -456,7 +452,7 @@ class GeoFunc(object):
         mapping_result=mapping(point)
         return [mapping_result["coordinates"][0],mapping_result["coordinates"][1]]
 
-    # 获得某个多边形的边
+    # 多角形の辺を取得する
     def getPolyEdges(poly):
         # print(f'poly: {poly}')
         edges=[]
@@ -478,7 +474,7 @@ class GeoFunc(object):
     def lineToVec(edge):
         return [edge[1][0]-edge[0][0],edge[1][1]-edge[0][1]]
     
-    '''edge1を基準として、edge2の位置を判定している．'''
+    '''edge1を基準として，edge2の位置を判定している．'''
     def judgePosition(edge1,edge2):
         x1=edge1[1][0]-edge1[0][0]
         y1=edge1[1][1]-edge1[0][1]
@@ -497,12 +493,6 @@ class GeoFunc(object):
             right=True 
         return right,left,parallel
 
-
-    def getSlideLine(line,x,y):
-        new_line=[]
-        for pt in line:
-            new_line.append([pt[0]+x,pt[1]+y])
-        return new_line
 
     def getCentroid(poly):
         return GeoFunc.getPt(Polygon(poly).centroid)

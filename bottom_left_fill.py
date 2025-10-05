@@ -97,11 +97,12 @@ class BottomLeftFill(object):
         differ_index=self.getBottomLeft(differ)
         '''複雑な制約を追加する場合は，differ_indexを変更する必要がある
         例えば，図形Aと図形B間のユークリッド距離が最も小さい点を探索する関数を作成するなど'''
-        index_a = 2
-        differ_index = self.EuclideanNearestPoint(adjoin, self.polygons[index_a], differ)
+        # index_a = 2
+        # differ_index = self.EuclideanNearestPoint(adjoin, self.polygons[index_a], differ)
         # adjoin「配置対象図形」の中で，topの点を取得
         refer_pt_index=GeoFunc.checkTop(adjoin)
         # self.polygons[index]（配置対象）の値を更新
+        print(f'index : {index}')
         GeoFunc.slideToPoint(self.polygons[index],adjoin[refer_pt_index],differ[differ_index])     
         
         self.nodes_centroid.append(GeoFunc.getCentroid(self.polygons[index]))
@@ -149,7 +150,7 @@ class BottomLeftFill(object):
     def showAll(self, total_distance=None, distance_list=None, tours=None):
 
         PltFunc.showGif(self.polygons, self.width, self.contain_length, self.data_id)
-        exit()
+        # exit()
         for i in range(0,len(self.polygons)):
             PltFunc.addPolygon(self.polygons[i])
         # if total_distance!=None:
